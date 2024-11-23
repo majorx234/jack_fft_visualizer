@@ -16,6 +16,25 @@ find_package(Jack REQUIRED)
 set(JACK_FFT_VIZUALIZER_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c
 )
+
+set(SIMPLE_DFT_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/simple_dft.c
+)
+
+add_library(simple_dft)
+target_sources(simple_dft
+ PRIVATE
+  ${SIMPLE_DFT_SOURCES}
+)
+target_include_directories(simple_dft
+ PRIVATE
+  include
+)
+target_link_libraries(simple_dft
+ PRIVATE
+  m
+)
+
 add_executable(jack_fft_visualizer)
 target_sources(jack_fft_visualizer
  PRIVATE
