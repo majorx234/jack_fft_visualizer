@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <stdbool.h>
 
 #include <jack/types.h>
 #include <jack/ringbuffer.h>
@@ -80,9 +81,58 @@ void jack_stuff_clear(JackStuff* jack_stuff) {
   free(jack_stuff);
 }
 
+typedef struct ThreadStuff {
+  bool running;
+  jack_ringbuffer_t* audio_in_ringbuffer;
+  pthread_mutex_t* audio_event_thread_lock;
+  pthread_cond_t* data_ready;
+} ThreadStuff;
+
+typedef struct ThreadResult {
+  int status;
+} ThreadResult;
+
+void* audio_visualizer_thread_fct(void* thread_stuff_raw) {
+  ThreadStuff* thread_stuff = (ThreadStuff*) thread_stuff_raw;
+  ThreadResult* result = (ThreadResult*)malloc(sizeof( ThreadResult));
+  result->status = 0;
+  while(result->status < 60 && thread_stuff->running){
+    sleep(1);
+    // TODO audio visualization
+    result->status+=1;
+  }
+  printf("finish audio vissualizer thread\n");
+  return result;
+}
+
 int main(void){
   char client_name[] = "jack_fft_visualizer\n";
   JackStuff* jack_stuff = create_jack_stuff(client_name);
-  sleep(1);
+
+  pthread_t audio_visualizer_thread;
+
+  ThreadStuff thread_stuff = {
+    .running = true,
+    .audio_in_ringbuffer = jack_stuff->audio_in_ringbuffer,
+    .audio_event_thread_lock = &jack_stuff->audio_event_thread_lock,
+    .data_ready = &jack_stuff->data_ready
+  };
+  pthread_create(&audio_visualizer_thread, NULL, audio_visualizer_thread_fct,(void *) &thread_stuff);
+
+  // ending programm:
+  sleep(20);
+  // TODO: need signal handler to stop prgramm
+  // TODO: add stopping conditional
+
+  ThreadResult* result = NULL;
+  thread_stuff.running = false;
+  if (pthread_mutex_trylock (&jack_stuff->audio_event_thread_lock) == 0) {
+    pthread_cond_signal (&jack_stuff->data_ready);
+    pthread_mutex_unlock (&jack_stuff->audio_event_thread_lock);
+  }
+
+  pthread_join(audio_visualizer_thread, (void**)&result);
+  printf("received status: %d\n",result->status);
   jack_stuff_clear(jack_stuff);
+  free(result);
 }
