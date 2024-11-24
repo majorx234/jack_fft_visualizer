@@ -9,6 +9,7 @@
 typedef struct SimpleDFT{
   size_t size;
   float complex* fourier_matrix;
+  float* hann_window;
 } SimpleDFT;
 
 SimpleDFT *create_simple_dft(size_t size);
