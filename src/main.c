@@ -10,6 +10,8 @@
 #include <jack/ringbuffer.h>
 #include <jack/jack.h>
 
+#include "spectrum_gui.h"
+
 #define min(a, b) \
   ({ \
     __typeof__(a) _a = (a); \
@@ -96,11 +98,15 @@ void* audio_visualizer_thread_fct(void* thread_stuff_raw) {
   ThreadStuff* thread_stuff = (ThreadStuff*) thread_stuff_raw;
   ThreadResult* result = (ThreadResult*)malloc(sizeof( ThreadResult));
   result->status = 0;
+  SpectrumGui* spectrum_gui = init_spectrum_gui();
+  printf("init GUI\n");
+  run_gui(spectrum_gui);
   while(result->status < 60 && thread_stuff->running){
     sleep(1);
     // TODO audio visualization
     result->status+=1;
   }
+  free_spectrum_gui(spectrum_gui);
   printf("finish audio vissualizer thread\n");
   return result;
 }
