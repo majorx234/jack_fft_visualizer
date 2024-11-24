@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
-#include <complex.h> 
+#include <complex.h>
 
 typedef struct SimpleDFT{
   size_t size;

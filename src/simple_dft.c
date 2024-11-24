@@ -36,7 +36,9 @@ void calc_simple_dft(SimpleDFT* simple_dft, float* in, float* out){
     for(size_t j = 0; j<simple_dft->size; j++){
       freq+= simple_dft->fourier_matrix[i * simple_dft->size + j] * windowed_in[j];
     }
-    out[i] = cabsf(freq);
+    float freq_real = crealf(freq);
+    float freq_img = cimagf(freq);
+    out[i] = logf(freq_real*freq_real + freq_img*freq_img);
   }
 }
 
