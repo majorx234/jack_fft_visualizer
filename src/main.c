@@ -10,6 +10,8 @@
 #include <jack/ringbuffer.h>
 #include <jack/jack.h>
 
+#include <raylib.h>
+
 #include "spectrum_gui.h"
 
 #define min(a, b) \
@@ -98,13 +100,22 @@ void* audio_visualizer_thread_fct(void* thread_stuff_raw) {
   ThreadStuff* thread_stuff = (ThreadStuff*) thread_stuff_raw;
   ThreadResult* result = (ThreadResult*)malloc(sizeof( ThreadResult));
   result->status = 0;
-  SpectrumGui* spectrum_gui = init_spectrum_gui();
+  const size_t size = 1024;
+  float* data = calloc(size, sizeof(float));
+  SpectrumGui* spectrum_gui = init_spectrum_gui(size);
   printf("init GUI\n");
-  run_gui(spectrum_gui);
-  while(result->status < 60 && thread_stuff->running){
-    sleep(1);
+  while(thread_stuff->running){
+    // TODO check for data in buffer
+    size_t num_bytes = jack_ringbuffer_read_space (thread_stuff->audio_in_ringbuffer);
+    if(num_bytes < 1024 * sizeof(float)){
+      bool close = update_gui(spectrum_gui, NULL, 0, false);
+    } else {
+      size_t received_bytes = jack_ringbuffer_read(thread_stuff->audio_in_ringbuffer, (char*)data, size*sizeof(float));
+      // todo check received bytes
+      bool close = update_gui(spectrum_gui, data, size, true);
+    }
     // TODO audio visualization
-    result->status+=1;
+    if(close) break;
   }
   free_spectrum_gui(spectrum_gui);
   printf("finish audio vissualizer thread\n");
@@ -117,11 +128,13 @@ int main(void){
 
   pthread_t audio_visualizer_thread;
 
+  const size_t spectrum_size = 1024;
+
   ThreadStuff thread_stuff = {
     .running = true,
     .audio_in_ringbuffer = jack_stuff->audio_in_ringbuffer,
     .audio_event_thread_lock = &jack_stuff->audio_event_thread_lock,
-    .data_ready = &jack_stuff->data_ready
+    .data_ready = &jack_stuff->data_ready,
   };
   pthread_create(&audio_visualizer_thread, NULL, audio_visualizer_thread_fct,(void *) &thread_stuff);
 

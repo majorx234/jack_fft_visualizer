@@ -14,6 +14,10 @@ find_package(Threads REQUIRED)
 find_package(Jack REQUIRED)
 find_package(raylib REQUIRED)
 
+set(DSP_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/dsp.c
+)
+
 set(SIMPLE_DFT_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/simple_dft.c
 )
@@ -24,6 +28,20 @@ set(SPECTRUM_GUI_SOURCES
 
 set(JACK_FFT_VIZUALIZER_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c
+)
+
+add_library(dsp)
+target_sources(dsp
+ PRIVATE
+  ${DSP_SOURCES}
+)
+target_include_directories(dsp
+ PRIVATE
+  include
+)
+target_link_libraries(dsp
+ PRIVATE
+  m
 )
 
 
@@ -53,7 +71,10 @@ target_include_directories(spectrum_gui
 )
 target_link_libraries(spectrum_gui
  PRIVATE
-  ${raylib_LIBRARIES}
+ ${raylib_LIBRARIES}
+ m
+ dsp
+ simple_dft
 )
 
 add_executable(jack_fft_visualizer)
