@@ -44,7 +44,7 @@ int process(jack_nframes_t nframes, void* jack_stuff_raw) {
 
   size_t space = jack_ringbuffer_write_space(jack_stuff->audio_in_ringbuffer);
   size_t nsamples = min(space / sizeof(float), nframes);
-  int written1 = jack_ringbuffer_write(jack_stuff->audio_in_ringbuffer, jack_audio_in_buffer, nsamples);
+  int written1 = jack_ringbuffer_write(jack_stuff->audio_in_ringbuffer, jack_audio_in_buffer, nsamples * sizeof(float));
   if (pthread_mutex_trylock (&jack_stuff->audio_event_thread_lock) == 0) {
     pthread_cond_signal (&jack_stuff->data_ready);
     pthread_mutex_unlock (&jack_stuff->audio_event_thread_lock);
@@ -103,16 +103,16 @@ void* audio_visualizer_thread_fct(void* thread_stuff_raw) {
   const size_t size = 1024;
   float* data = calloc(size, sizeof(float));
   SpectrumGui* spectrum_gui = init_spectrum_gui(size);
-  printf("init GUI\n");
   while(thread_stuff->running){
     // TODO check for data in buffer
     size_t num_bytes = jack_ringbuffer_read_space (thread_stuff->audio_in_ringbuffer);
+    bool close = false;
     if(num_bytes < 1024 * sizeof(float)){
-      bool close = update_gui(spectrum_gui, NULL, 0, false);
+      close = update_gui(spectrum_gui, NULL, 0, false);
     } else {
       size_t received_bytes = jack_ringbuffer_read(thread_stuff->audio_in_ringbuffer, (char*)data, size*sizeof(float));
       // todo check received bytes
-      bool close = update_gui(spectrum_gui, data, size, true);
+      close = update_gui(spectrum_gui, data, size, true);
     }
     // TODO audio visualization
     if(close) break;

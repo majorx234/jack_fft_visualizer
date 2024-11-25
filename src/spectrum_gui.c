@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 #include <unistd.h>
 #include <math.h>
@@ -11,7 +12,7 @@
 #include "dsp.h"
 #include "simple_dft.h"
 
-SpectrumGui *init_spectrum_gui(size_t size){
+SpectrumGui* init_spectrum_gui(size_t size){
   SpectrumGui* spectrum_gui = (SpectrumGui*)malloc(sizeof(SpectrumGui));
 
   //todo: better calculation of size_logbins
@@ -45,14 +46,17 @@ bool update_gui(SpectrumGui* spectrum_gui, float* data, size_t data_size, bool n
 
   bool close = WindowShouldClose();
   BeginDrawing();
-  ClearBackground(BLACK);
   if (IsKeyPressed(KEY_SPACE)) {
-      close = true;
+    printf("space pressed\n");
+    close = true;
   }
 
   if(!new_data){
+    EndDrawing();
     return close;
   }
+  // only redraw if new data is avaible
+  ClearBackground(BLACK);
 
   calc_simple_dft(spectrum_gui->dft, data, spectrum_gui->spectrum_data);
   sqash_logarithmic(spectrum_gui->spectrum_data, spectrum_gui->spectrum_log_data, spectrum_gui->size);

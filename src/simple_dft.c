@@ -2,7 +2,8 @@
 #include <string.h>
 #include <assert.h>
 #include <math.h>
-#include <complex.h> 
+#include <complex.h>
+#include <stdio.h>
 
 SimpleDFT* create_simple_dft(size_t size) {
   float complex* new_fourier_matrix = (float complex*)malloc(size*size*sizeof(float complex));
@@ -15,7 +16,7 @@ SimpleDFT* create_simple_dft(size_t size) {
 
   // Hann Window
   float* hann_window = (float*)malloc(size*sizeof(float));
-  for (size_t k;k<size;k++) {
+  for (size_t k=0;k<size;k++) {
     hann_window[k] = (0.5 * (1 - cos(2*M_PI*k/size)));
   }
 
@@ -44,5 +45,6 @@ void calc_simple_dft(SimpleDFT* simple_dft, float* in, float* out){
 
 void free_simple_dft(SimpleDFT* simple_dft){
   free(simple_dft->fourier_matrix);
+  free(simple_dft->hann_window);
   free(simple_dft);
 }
