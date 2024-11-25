@@ -39,7 +39,8 @@ void calc_simple_dft(SimpleDFT* simple_dft, float* in, float* out){
     }
     float freq_real = crealf(freq);
     float freq_img = cimagf(freq);
-    out[i] = logf(freq_real*freq_real + freq_img*freq_img);
+    // TODO: adust logarithmic scale
+    out[i] = logf(1.1 + freq_real*freq_real + freq_img*freq_img);
   }
 }
 

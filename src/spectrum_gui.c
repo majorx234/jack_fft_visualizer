@@ -23,6 +23,7 @@ SpectrumGui* init_spectrum_gui(size_t size){
   for(float f = lowf; (size_t) f < size/2; f = ceilf(f*step)) {
     m++;
   }
+  spectrum_gui->size = size;
   spectrum_gui->size_logbins = m;
   spectrum_gui->spectrum_data = (float*)malloc(size*sizeof(float));
   spectrum_gui->spectrum_log_data = (float*)malloc(spectrum_gui->size_logbins*sizeof(float));
