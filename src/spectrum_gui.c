@@ -27,12 +27,12 @@ SpectrumGui *init_spectrum_gui(size_t size){
   spectrum_gui->spectrum_log_data = (float*)malloc(spectrum_gui->size_logbins*sizeof(float));
   spectrum_gui->spectrum_smooth = (float*)malloc(spectrum_gui->size_logbins*sizeof(float));
   spectrum_gui->spectrum_smear = (float*)malloc(spectrum_gui->size_logbins*sizeof(float));
-  spectrum_gui->circle = LoadShader(NULL, "../shader/circle.fs");
-  spectrum_gui->smear = LoadShader(NULL, "../shader/smear.fs");
   spectrum_gui->dft = create_simple_dft(size);
 
   InitWindow(800, 600, "SpectrumGui");
   SetTargetFPS(60);
+  spectrum_gui->circle = LoadShader(NULL, "../shader/circle.fs");
+  spectrum_gui->smear = LoadShader(NULL, "../shader/smear.fs");
   return spectrum_gui;
 }
 
@@ -146,7 +146,6 @@ bool update_gui(SpectrumGui* spectrum_gui, float* data, size_t data_size, bool n
     DrawTextureEx(texture, position, 0, 2*radius, color);
   }
   EndShaderMode();
-
   EndDrawing();
 }
 
