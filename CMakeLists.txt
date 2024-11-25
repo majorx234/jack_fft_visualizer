@@ -26,6 +26,11 @@ set(SPECTRUM_GUI_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/spectrum_gui.c
 )
 
+set(JACK_STUFF_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/jack_stuff.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/jack_stuff.h
+)
+
 set(JACK_FFT_VIZUALIZER_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c
 )
@@ -44,7 +49,6 @@ target_link_libraries(dsp
   m
 )
 
-
 add_library(simple_dft)
 target_sources(simple_dft
  PRIVATE
@@ -57,6 +61,21 @@ target_include_directories(simple_dft
 target_link_libraries(simple_dft
  PRIVATE
   m
+)
+
+add_library(jack_stuff)
+target_sources(jack_stuff
+ PRIVATE
+  ${JACK_STUFF_SOURCES}
+)
+target_include_directories(jack_stuff
+ PRIVATE
+  include
+  ${JACK_INCLUDE_DIRS}
+)
+target_link_libraries(jack_stuff
+ PRIVATE
+  ${JACK_LIBRARIES}
 )
 
 add_library(spectrum_gui)
@@ -90,5 +109,6 @@ target_link_libraries(jack_fft_visualizer
  PRIVATE
   ${JACK_LIBRARIES}
   spectrum_gui
+  jack_stuff
 )
 
