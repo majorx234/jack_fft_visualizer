@@ -42,7 +42,7 @@ void calc_simple_dft(SimpleDFT* simple_dft, float* in, float* out){
   }
 }
 
-void* free_simple_dft(SimpleDFT* simple_dft){
+void free_simple_dft(SimpleDFT* simple_dft){
   free(simple_dft->fourier_matrix);
   free(simple_dft);
 }

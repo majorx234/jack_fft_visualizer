@@ -13,6 +13,7 @@ typedef struct SimpleDFT{
 } SimpleDFT;
 
 SimpleDFT *create_simple_dft(size_t size);
-void* free_simple_dft(SimpleDFT *simple_dft);
+void calc_simple_dft(SimpleDFT *simple_dft, float* in, float* out);
+void free_simple_dft(SimpleDFT *simple_dft);
 
 #endif // SIMPLE_DFT_H_

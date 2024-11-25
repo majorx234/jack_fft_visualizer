@@ -26,8 +26,10 @@ SpectrumGui *init_spectrum_gui(size_t size){
   spectrum_gui->spectrum_data = (float*)malloc(size*sizeof(float));
   spectrum_gui->spectrum_log_data = (float*)malloc(spectrum_gui->size_logbins*sizeof(float));
   spectrum_gui->spectrum_smooth = (float*)malloc(spectrum_gui->size_logbins*sizeof(float));
-  spectrum_gui->circle = LoadShader(NULL, "../shaders/circle.fs");
-  spectrum_gui->smear = LoadShader(NULL, "../shaders/smear.fs");
+  spectrum_gui->spectrum_smear = (float*)malloc(spectrum_gui->size_logbins*sizeof(float));
+  spectrum_gui->circle = LoadShader(NULL, "../shader/circle.fs");
+  spectrum_gui->smear = LoadShader(NULL, "../shader/smear.fs");
+  spectrum_gui->dft = create_simple_dft(size);
 
   InitWindow(800, 600, "SpectrumGui");
   SetTargetFPS(60);
@@ -39,6 +41,7 @@ SpectrumGui *init_spectrum_gui(size_t size){
 bool update_gui(SpectrumGui* spectrum_gui, float* data, size_t data_size, bool new_data){
   int w = GetRenderWidth();
   int h = GetRenderHeight();
+  float dt = GetFrameTime();
 
   bool close = WindowShouldClose();
   BeginDrawing();
@@ -47,6 +50,22 @@ bool update_gui(SpectrumGui* spectrum_gui, float* data, size_t data_size, bool n
       close = true;
   }
 
+  if(!new_data){
+    return close;
+  }
+
+  calc_simple_dft(spectrum_gui->dft, data, spectrum_gui->spectrum_data);
+  sqash_logarithmic(spectrum_gui->spectrum_data, spectrum_gui->spectrum_log_data, spectrum_gui->size);
+
+  float smoothnes = 8;
+  float smearnes = 6;
+  smoother(spectrum_gui->spectrum_log_data,
+           spectrum_gui->spectrum_smooth,
+           spectrum_gui->spectrum_smear,
+           spectrum_gui->size,
+           smoothnes,
+           dt,
+           smearnes);
   float cell_width = (float)w/spectrum_gui->size_logbins;
 
   float saturation = 0.75f;
@@ -137,6 +156,7 @@ void free_spectrum_gui(SpectrumGui* spectrum_gui){
     free(spectrum_gui->spectrum_log_data);
     free(spectrum_gui->spectrum_smooth);
     free(spectrum_gui->spectrum_smear);
+    free_simple_dft(spectrum_gui->dft);
     free(spectrum_gui);
   }
 }

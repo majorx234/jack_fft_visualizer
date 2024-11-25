@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <raylib.h>
+#include "simple_dft.h"
 
 typedef struct SpectrumGui{
   Shader circle;
@@ -14,6 +15,7 @@ typedef struct SpectrumGui{
   float* spectrum_smear;
   size_t size;
   size_t size_logbins;
+  SimpleDFT* dft;
 } SpectrumGui;
 
 
