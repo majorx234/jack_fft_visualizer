@@ -7,6 +7,16 @@
 
 # Overview
 - ![Alt text](documentation/images/overview.png?raw=true "overview over modules")
+  - audio data is captured in jack prices function
+    - stored in `audio_in_ringbuffer`
+  - `audio_vizualizer_thread_fct` reads data from `audio_in_ringbuffer`
+    - hands data over to  `update_gui(...)`
+  - `update_gui(...)`- function does: 
+    - simple dft
+    - adjust spectrum 
+      - logarithmic scaling (in frequency and amplitude)
+      - smoothening
+    - graphical visualization through raylib + shader
 
 # TODO
 - adjust simple_dft to have values between 0 and 1 with logarithmic scale
@@ -14,7 +24,11 @@
 - documentation
   - overview of modules and  data flow
 - unix signal handling
-- notify mechanism signal modules new data, closeing
+- notify mechanism: 
+  - signal modules new data is there, 
+  - application is closing
+- keep track of ringbuffer filling (maybe drop samples)
+
 
 # References
 - "if that's a theft than that's art" quote by Tsoding
