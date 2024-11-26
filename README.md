@@ -1,4 +1,4 @@
-# Info 
+# Info
 - example application for Jack
   - show audio capturing
   - in combination with GUI
@@ -18,6 +18,18 @@
       - smoothening
     - graphical visualization through raylib + shader
 
+# Build
+## Dependencies
+- `Jack` (maybe `jack2` or `pipewire-jack`)
+- `raylib`
+- `cmake` && `make` as build system
+## how to build
+- run:
+  - `mkdir build`
+  - `cd build`
+  - `cmake ..`
+  - `make`
+
 # TODO
 - adjust simple_dft to have values between 0 and 1 with logarithmic scale
 - replace simple_dft with fft
@@ -30,7 +42,7 @@
 - keep track of ringbuffer filling (maybe drop samples)
 
 # References
-- "if that's a theft than that's art" quote by Tsoding
+- "if that's a theft then that's art" quote by Tsoding
 - Music Visiualizer Project by Tsoding:
   - https://www.youtube.com/watch?v=Xdbk1Pr5WXU&list=PLpM-Dvs8t0Vak1rrE2NJn8XYEJ5M7-BqT
 - thx to toxypiks for explaination (helps me a lot to understand the code):

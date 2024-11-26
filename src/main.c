@@ -21,7 +21,6 @@ typedef struct ThreadStuff {
   // to notify closing
   pthread_mutex_t close_thread_lock;
   pthread_cond_t close_ready;
-
 } ThreadStuff;
 
 typedef struct ThreadResult {
@@ -35,6 +34,7 @@ void* audio_visualizer_thread_fct(void* thread_stuff_raw) {
   const size_t size = 1024;
   float* data = calloc(size, sizeof(float));
   SpectrumGui* spectrum_gui = init_spectrum_gui(size);
+
   while(thread_stuff->running){
     // TODO check for data in buffer
     size_t num_bytes = jack_ringbuffer_read_space (thread_stuff->audio_in_ringbuffer);
@@ -61,12 +61,10 @@ void* audio_visualizer_thread_fct(void* thread_stuff_raw) {
 }
 
 int main(void){
-  char client_name[] = "jack_fft_visualizer\n";
+  char client_name[] = "jack_fft_visualizer";
   JackStuff* jack_stuff = create_jack_stuff(client_name);
 
   pthread_t audio_visualizer_thread;
-
-  const size_t spectrum_size = 1024;
 
   ThreadStuff thread_stuff = {
     .running = true,
@@ -74,6 +72,8 @@ int main(void){
     .audio_event_thread_lock = &jack_stuff->audio_event_thread_lock,
     .data_ready = &jack_stuff->data_ready
   };
+
+  // to signal closing notification
   pthread_mutex_init(&thread_stuff.close_thread_lock, NULL);
   pthread_cond_init(&thread_stuff.close_ready, NULL);
 

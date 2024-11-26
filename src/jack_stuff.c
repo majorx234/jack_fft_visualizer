@@ -22,12 +22,16 @@
 
 int process(jack_nframes_t nframes, void* jack_stuff_raw) {
   JackStuff* jack_stuff = (JackStuff*)jack_stuff_raw;
-  // midi_in event handling:
+
+  // open audioport
   void* jack_audio_in_buffer =  jack_port_get_buffer ( jack_stuff->audio_in_port, nframes);
 
+  // copy samples from audioport to ringbuffer
   size_t space = jack_ringbuffer_write_space(jack_stuff->audio_in_ringbuffer);
   size_t nsamples = min(space / sizeof(float), nframes);
   int written1 = jack_ringbuffer_write(jack_stuff->audio_in_ringbuffer, jack_audio_in_buffer, nsamples * sizeof(float));
+
+  // notify data avaible
   if (pthread_mutex_trylock (&jack_stuff->audio_event_thread_lock) == 0) {
     pthread_cond_signal (&jack_stuff->data_ready);
     pthread_mutex_unlock (&jack_stuff->audio_event_thread_lock);
@@ -41,6 +45,8 @@ JackStuff* create_jack_stuff(char* client_name){
   jack_stuff->audio_in_port = NULL;
   jack_stuff->audio_in_ringbuffer = NULL;
   jack_stuff->client = NULL;
+
+  // notification mutex + conditional variable
   pthread_mutex_init(&jack_stuff->audio_event_thread_lock, NULL);
   pthread_cond_init(&jack_stuff->data_ready, NULL);
 
@@ -48,11 +54,12 @@ JackStuff* create_jack_stuff(char* client_name){
                                          JackNullOption,
                                          0,
                                          0 );
-  const size_t ringbuffer_size = 48000 * sizeof(float);
   jack_stuff->audio_in_port  = jack_port_register (jack_stuff->client,
                                                   "audio_input",
                                                   JACK_DEFAULT_AUDIO_TYPE,
                                                   JackPortIsInput, 0);
+
+  const size_t ringbuffer_size = 48000 * sizeof(float);
   jack_stuff->audio_in_ringbuffer = jack_ringbuffer_create(ringbuffer_size);
 
   jack_set_process_callback(jack_stuff->client, process, (void*)jack_stuff);
