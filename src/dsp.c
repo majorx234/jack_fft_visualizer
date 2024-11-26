@@ -1,7 +1,8 @@
 #include <unistd.h>
 #include <math.h>
+#include "dsp.h"
 
-float sqash_logarithmic(float* in, float* outlog, size_t size){
+float squash_logarithmic(float* in, float* outlog, size_t size){
   float step = 1.06;
   float lowf = 1.0f;
   size_t m = 0;

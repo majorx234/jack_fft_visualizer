@@ -23,6 +23,7 @@ SpectrumGui* init_spectrum_gui(size_t size){
   for(float f = lowf; (size_t) f < size/2; f = ceilf(f*step)) {
     m++;
   }
+  m = m-1;
   spectrum_gui->size = size;
   spectrum_gui->size_logbins = m;
   spectrum_gui->spectrum_data = (float*)malloc(size*sizeof(float));
@@ -37,8 +38,6 @@ SpectrumGui* init_spectrum_gui(size_t size){
   spectrum_gui->smear = LoadShader(NULL, "../shader/smear.fs");
   return spectrum_gui;
 }
-
-
 
 bool update_gui(SpectrumGui* spectrum_gui, float* data, size_t data_size, bool new_data){
   int w = GetRenderWidth();
@@ -59,18 +58,20 @@ bool update_gui(SpectrumGui* spectrum_gui, float* data, size_t data_size, bool n
   // only redraw if new data is avaible
   ClearBackground(BLACK);
 
+
   calc_simple_dft(spectrum_gui->dft, data, spectrum_gui->spectrum_data);
-  sqash_logarithmic(spectrum_gui->spectrum_data, spectrum_gui->spectrum_log_data, spectrum_gui->size);
+  squash_logarithmic(spectrum_gui->spectrum_data, spectrum_gui->spectrum_log_data, spectrum_gui->size);
 
   float smoothnes = 8;
   float smearnes = 6;
   smoother(spectrum_gui->spectrum_log_data,
            spectrum_gui->spectrum_smooth,
            spectrum_gui->spectrum_smear,
-           spectrum_gui->size,
+           spectrum_gui->size_logbins,
            smoothnes,
            dt,
            smearnes);
+
   float cell_width = (float)w/spectrum_gui->size_logbins;
 
   float saturation = 0.75f;
@@ -92,6 +93,7 @@ bool update_gui(SpectrumGui* spectrum_gui, float* data, size_t data_size, bool n
     float thick = cell_width/2*sqrtf(t);
     DrawLineEx(start_pos, end_pos, thick, color);
   }
+
 
   Texture2D texture = {rlGetTextureIdDefault(), 1, 1, 1, PIXELFORMAT_UNCOMPRESSED_R8G8B8A8};
 
@@ -152,6 +154,8 @@ bool update_gui(SpectrumGui* spectrum_gui, float* data, size_t data_size, bool n
   }
   EndShaderMode();
   EndDrawing();
+
+  return close;
 }
 
 void free_spectrum_gui(SpectrumGui* spectrum_gui){

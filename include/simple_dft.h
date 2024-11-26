@@ -3,13 +3,12 @@
 
 #include <stdlib.h>
 #include <unistd.h>
-#include <math.h>
 #include <complex.h>
 
 typedef struct SimpleDFT{
   size_t size;
-  float complex* fourier_matrix;
   float* hann_window;
+  float complex* fourier_matrix;
 } SimpleDFT;
 
 SimpleDFT *create_simple_dft(size_t size);

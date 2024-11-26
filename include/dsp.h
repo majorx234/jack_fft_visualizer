@@ -1,3 +1,6 @@
+#ifndef DSP_H_
+#define DSP_H_
+
 #include <unistd.h>
 
 void smoother(float* out_log,
@@ -7,4 +10,6 @@ void smoother(float* out_log,
               float smoothness,
               float dt,
               float smearness);
-float sqash_logarithmic(float* in, float* outlog, size_t size);
+float squash_logarithmic(float* in, float* outlog, size_t size);
+
+#endif // DSP_H_

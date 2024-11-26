@@ -18,6 +18,10 @@ typedef struct ThreadStuff {
   jack_ringbuffer_t* audio_in_ringbuffer;
   pthread_mutex_t* audio_event_thread_lock;
   pthread_cond_t* data_ready;
+  // to notify closing
+  pthread_mutex_t close_thread_lock;
+  pthread_cond_t close_ready;
+
 } ThreadStuff;
 
 typedef struct ThreadResult {
@@ -43,7 +47,13 @@ void* audio_visualizer_thread_fct(void* thread_stuff_raw) {
       close = update_gui(spectrum_gui, data, size, true);
     }
     // TODO audio visualization
-    if(close) break;
+    if(close) {
+      if (pthread_mutex_trylock (&thread_stuff->close_thread_lock) == 0) {
+          pthread_cond_signal (&thread_stuff->close_ready);
+          pthread_mutex_unlock (&thread_stuff->close_thread_lock);
+        }
+      break;
+    }
   }
   free_spectrum_gui(spectrum_gui);
   printf("finish audio vissualizer thread\n");
@@ -62,14 +72,16 @@ int main(void){
     .running = true,
     .audio_in_ringbuffer = jack_stuff->audio_in_ringbuffer,
     .audio_event_thread_lock = &jack_stuff->audio_event_thread_lock,
-    .data_ready = &jack_stuff->data_ready,
+    .data_ready = &jack_stuff->data_ready
   };
+  pthread_mutex_init(&thread_stuff.close_thread_lock, NULL);
+  pthread_cond_init(&thread_stuff.close_ready, NULL);
+
   pthread_create(&audio_visualizer_thread, NULL, audio_visualizer_thread_fct,(void *) &thread_stuff);
 
-  // ending programm:
-  sleep(20);
-  // TODO: need signal handler to stop prgramm
-  // TODO: add stopping conditional
+  // wait to finish programm:
+  pthread_cond_wait (&thread_stuff.close_ready, &thread_stuff.close_thread_lock);
+  // TODO: still need signal handler to stop programm
 
   ThreadResult* result = NULL;
   thread_stuff.running = false;
