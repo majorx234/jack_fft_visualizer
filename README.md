@@ -1,9 +1,12 @@
 # Info 
-- Example Application for Jack
+- example application for Jack
   - show audio capturing
   - in combination with GUI
 - creates a spectrum visualization out of audio stream
 - makes use of Raylib and Jack Audio Connection Kit
+
+# Overview
+- ![Alt text](documentation/images/overview.png?raw=true "overview over modules")
 
 # TODO
 - adjust simple_dft to have values between 0 and 1 with logarithmic scale
@@ -14,7 +17,7 @@
 - notify mechanism signal modules new data, closeing
 
 # References
-- "if that's a theft than that's art" Quote by Tsoding
+- "if that's a theft than that's art" quote by Tsoding
 - Music Visiualizer Project by Tsoding: 
   - https://www.youtube.com/watch?v=Xdbk1Pr5WXU&list=PLpM-Dvs8t0Vak1rrE2NJn8XYEJ5M7-BqT
 - thx to toxypiks for explaination (helps me a lot to understand the code):
