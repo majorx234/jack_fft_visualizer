@@ -4,6 +4,7 @@ build/
 compile_commands.json
 material/
 .cache/
+notes.txt
 
 ##### Emacs
 # -*- mode: gitignore; -*-
