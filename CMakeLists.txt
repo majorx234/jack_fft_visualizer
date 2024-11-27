@@ -33,6 +33,8 @@ set(JACK_STUFF_SOURCES
 
 set(JACK_FFT_VIZUALIZER_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/main.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/thread_stuff.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/thread_stuff.h
 )
 
 add_library(dsp)

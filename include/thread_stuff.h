@@ -20,53 +20,30 @@
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "stdio.h"
-#include <stdlib.h>
-#include <time.h>
+#ifndef THREAD_STUFF_H_
+#define THREAD_STUFF_H_
+
 #include <unistd.h>
-#include <stdlib.h>
 #include <pthread.h>
 #include <stdbool.h>
 
 #include <jack/ringbuffer.h>
 
-#include <raylib.h>
 
-#include "jack_stuff.h"
-#include "thread_stuff.h"
+typedef struct ThreadStuff {
+  bool running;
+  jack_ringbuffer_t* audio_in_ringbuffer;
+  pthread_mutex_t* audio_event_thread_lock;
+  pthread_cond_t* data_ready;
+  // to notify closing
+  pthread_mutex_t close_thread_lock;
+  pthread_cond_t close_ready;
+} ThreadStuff;
 
-int main(void){
-  char client_name[] = "jack_fft_visualizer";
-  JackStuff* jack_stuff = create_jack_stuff(client_name);
+typedef struct ThreadResult {
+  int status;
+} ThreadResult;
 
-  pthread_t audio_visualizer_thread;
+void* audio_visualizer_thread_fct(void* thread_stuff_raw);
 
-  ThreadStuff thread_stuff = {
-    .running = true,
-    .audio_in_ringbuffer = jack_stuff->audio_in_ringbuffer,
-    .audio_event_thread_lock = &jack_stuff->audio_event_thread_lock,
-    .data_ready = &jack_stuff->data_ready
-  };
-
-  // to signal closing notification
-  pthread_mutex_init(&thread_stuff.close_thread_lock, NULL);
-  pthread_cond_init(&thread_stuff.close_ready, NULL);
-
-  pthread_create(&audio_visualizer_thread, NULL, audio_visualizer_thread_fct,(void *) &thread_stuff);
-
-  // wait to finish programm:
-  pthread_cond_wait (&thread_stuff.close_ready, &thread_stuff.close_thread_lock);
-  // TODO: still need signal handler to stop programm
-
-  ThreadResult* result = NULL;
-  thread_stuff.running = false;
-  if (pthread_mutex_trylock (&jack_stuff->audio_event_thread_lock) == 0) {
-    pthread_cond_signal (&jack_stuff->data_ready);
-    pthread_mutex_unlock (&jack_stuff->audio_event_thread_lock);
-  }
-
-  pthread_join(audio_visualizer_thread, (void**)&result);
-  printf("received status: %d\n",result->status);
-  jack_stuff_clear(jack_stuff);
-  free(result);
-}
+#endif
