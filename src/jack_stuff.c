@@ -20,27 +20,13 @@
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
 
-/// #include "jack_stuff.h"
-
 #include <stdlib.h>
 
 #include <jack/jack.h>
 #include <jack/types.h>
 #include <jack/ringbuffer.h>
-
-#define min(a, b) \
-  ({ \
-    __typeof__(a) _a = (a); \
-    __typeof__(b) _b = (b); \
-    _a < _b ? _a : _b; \
-  })
-
-#define max(a,b) \
-  ({ \
-      __typeof__ (a) _a = (a); \
-      __typeof__ (b) _b = (b); \
-      _a > _b ? _a : _b; \
-  })
+#include "jack_stuff.h"
+#include "helper.h"
 
 int process(jack_nframes_t nframes, void* jack_stuff_raw) {
   JackStuff* jack_stuff = (JackStuff*)jack_stuff_raw;
