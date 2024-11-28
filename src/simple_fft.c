@@ -47,7 +47,6 @@ void fft(float in[], size_t stride, float complex out[], size_t n)
   }
 }
 
-
 SimpleFFT* create_simple_fft(size_t size) {
   SimpleFFT* new_fft = (SimpleFFT*)malloc(sizeof(SimpleFFT));
   new_fft->size = size;
@@ -70,7 +69,13 @@ void calc_simple_fft(SimpleFFT* simple_fft, float* in, float* out){
     float value = in[h] * window;
     windowed_in[h] = value;
   }
+  fft(windowed_in, 1, simple_fft->result, simple_fft->size);
 
+  for(size_t i = 0; i<simple_fft->size; ++i){
+    float freq_real = crealf(simple_fft->result[i]);
+    float freq_img = cimagf(simple_fft->result[i]);
+    out[i] = logf(freq_real*freq_real + freq_img*freq_img);
+  }
 }
 
 void free_simple_fft(SimpleFFT* simple_fft){
