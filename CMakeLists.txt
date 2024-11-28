@@ -20,6 +20,12 @@ set(DSP_SOURCES
 
 set(SIMPLE_DFT_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/simple_dft.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/simple_dft.h
+)
+
+set(SIMPLE_FFT_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/simple_fft.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/simple_fft.h
 )
 
 set(SPECTRUM_GUI_SOURCES
@@ -61,6 +67,20 @@ target_include_directories(simple_dft
   include
 )
 target_link_libraries(simple_dft
+ PRIVATE
+  m
+)
+
+add_library(simple_fft)
+target_sources(simple_fft
+ PRIVATE
+  ${SIMPLE_FFT_SOURCES}
+)
+target_include_directories(simple_fft
+ PRIVATE
+  include
+)
+target_link_libraries(simple_fft
  PRIVATE
   m
 )

@@ -30,6 +30,7 @@
 typedef struct SimpleFFT{
   size_t size;
   float* hann_window;
+  float complex* result;
 } SimpleFFT;
 
 SimpleFFT *create_simple_fft(size_t size);
