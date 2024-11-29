@@ -43,6 +43,10 @@ set(JACK_FFT_VIZUALIZER_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/include/thread_stuff.h
 )
 
+set(FFT_TEST_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/fft_test.c
+)
+
 add_library(dsp)
 target_sources(dsp
  PRIVATE
@@ -132,5 +136,20 @@ target_link_libraries(jack_fft_visualizer
   ${JACK_LIBRARIES}
   spectrum_gui
   jack_stuff
+)
+
+add_executable(fft_test)
+target_sources(fft_test
+ PRIVATE
+  ${FFT_TEST_SOURCES}
+)
+target_include_directories(fft_test
+ PRIVATE
+  ${JACK_INCLUDE_DIRS}
+)
+target_link_libraries(fft_test
+ PRIVATE
+  simple_dft
+  simple_fft
 )
 
