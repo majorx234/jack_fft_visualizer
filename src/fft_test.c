@@ -44,9 +44,13 @@ int main(void){
   SimpleDFT* simple_dft = create_simple_dft(size);
   SimpleFFT* simple_fft = create_simple_fft(size);
 
-  calc_simple_fft(simple_fft, signal, spectrum_dft);
+  calc_simple_dft(simple_dft, signal, spectrum_dft);
   calc_simple_fft(simple_fft, signal, spectrum_fft);
 
+  for (size_t i = 0;i<size;++i){
+    float diff = spectrum_dft[i] - spectrum_fft[i];
+    printf("dft: %f, fft %f, diff: %f\n", spectrum_dft[i], spectrum_fft[i], diff);
+  }
   // TODO print results
   free_simple_dft(simple_dft);
   free_simple_fft(simple_fft);
