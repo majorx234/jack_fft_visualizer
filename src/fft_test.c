@@ -37,16 +37,17 @@ int main(void){
   const size_t size = 4096;
 
   float signal[size];
+  float spectrum_dft[size];
+  float spectrum_fft[size];
   signal_gen(signal,size,50.0);
 
-  SimpleDFT* dft = create_simple_dft(size);
-  SimpleFFT* fft = create_simple_fft(size);
+  SimpleDFT* simple_dft = create_simple_dft(size);
+  SimpleFFT* simple_fft = create_simple_fft(size);
 
-  // TODO calc stuff
-  //calc_simple_fft(SimpleFFT* simple_fft, float* in, float* out);
-  //calc_simple_fft(SimpleDFT* simple_fft, float* in, float* out);
+  calc_simple_fft(simple_fft, signal, spectrum_dft);
+  calc_simple_fft(simple_fft, signal, spectrum_fft);
 
   // TODO print results
-  free_simple_dft(dft);
-  free_simple_fft(fft);
+  free_simple_dft(simple_dft);
+  free_simple_fft(simple_fft);
 }
