@@ -51,6 +51,7 @@ SpectrumGui* init_spectrum_gui(size_t size){
   spectrum_gui->spectrum_data = (float*)malloc(size*sizeof(float));
   spectrum_gui->spectrum_log_data = (float*)malloc(spectrum_gui->size_logbins*sizeof(float));
   spectrum_gui->spectrum_smooth = (float*)malloc(spectrum_gui->size_logbins*sizeof(float));
+  spectrum_gui->spectrum_smooth_tmp = spectrum_gui->spectrum_smooth;
   spectrum_gui->spectrum_smear = (float*)malloc(spectrum_gui->size_logbins*sizeof(float));
   spectrum_gui->dft = create_simple_dft(size);
 
@@ -58,6 +59,10 @@ SpectrumGui* init_spectrum_gui(size_t size){
   SetTargetFPS(60);
   spectrum_gui->circle = LoadShader(NULL, "../shader/circle.fs");
   spectrum_gui->smear = LoadShader(NULL, "../shader/smear.fs");
+  spectrum_gui->use_smoothener = true;
+  spectrum_gui->smoothnes = 8;
+  spectrum_gui->smearnes = 6;
+
   return spectrum_gui;
 }
 
@@ -84,15 +89,18 @@ bool update_gui(SpectrumGui* spectrum_gui, float* data, size_t data_size, bool n
   calc_simple_dft(spectrum_gui->dft, data, spectrum_gui->spectrum_data);
   squash_logarithmic(spectrum_gui->spectrum_data, spectrum_gui->spectrum_log_data, spectrum_gui->size);
 
-  float smoothnes = 8;
-  float smearnes = 6;
-  smoother(spectrum_gui->spectrum_log_data,
-           spectrum_gui->spectrum_smooth,
-           spectrum_gui->spectrum_smear,
-           spectrum_gui->size_logbins,
-           smoothnes,
-           dt,
-           smearnes);
+  if(spectrum_gui->use_smoothener){
+    spectrum_gui->spectrum_smooth = spectrum_gui->spectrum_smooth_tmp;
+    smoother(spectrum_gui->spectrum_log_data,
+             spectrum_gui->spectrum_smooth,
+             spectrum_gui->spectrum_smear,
+             spectrum_gui->size_logbins,
+             spectrum_gui->smoothnes,
+             dt,
+             spectrum_gui->smearnes);
+  } else {
+    spectrum_gui->spectrum_smooth = spectrum_gui->spectrum_log_data;
+  }
 
   float cell_width = (float)w/spectrum_gui->size_logbins;
 

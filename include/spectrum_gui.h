@@ -34,10 +34,14 @@ typedef struct SpectrumGui{
   float* spectrum_data;
   float* spectrum_log_data;
   float* spectrum_smooth;
+  float* spectrum_smooth_tmp;
   float* spectrum_smear;
   size_t size;
   size_t size_logbins;
   SimpleDFT* dft;
+  bool use_smoothener;
+  float smoothnes;
+  float smearnes;
 } SpectrumGui;
 
 
