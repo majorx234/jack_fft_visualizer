@@ -32,6 +32,11 @@ set(SPECTRUM_GUI_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/spectrum_gui.c
 )
 
+set(GUI_ELEMENTS_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/gui_elements.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/gui_elements.h
+)
+
 set(JACK_STUFF_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/jack_stuff.c
   ${CMAKE_CURRENT_SOURCE_DIR}/include/jack_stuff.h
@@ -120,6 +125,21 @@ target_link_libraries(spectrum_gui
  m
  dsp
  simple_dft
+)
+
+add_library(gui_elements)
+target_sources(gui_elements
+ PRIVATE
+  ${GUI_ELEMENTS_SOURCES}
+)
+target_include_directories(gui_elements
+ PRIVATE
+  include
+  ${raylib_INCLUDE_DIRS}
+)
+target_link_libraries(gui_elements
+ PRIVATE
+ ${raylib_LIBRARIES}
 )
 
 add_executable(jack_fft_visualizer)
