@@ -28,6 +28,11 @@ set(SIMPLE_FFT_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/include/simple_fft.h
 )
 
+set(SIMPLE_FFT2_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/simple_fft2.c
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/simple_fft2.h
+)
+
 set(SPECTRUM_GUI_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/src/spectrum_gui.c
 )
@@ -90,6 +95,20 @@ target_include_directories(simple_fft
   include
 )
 target_link_libraries(simple_fft
+ PRIVATE
+  m
+)
+
+add_library(simple_fft2)
+target_sources(simple_fft2
+ PRIVATE
+  ${SIMPLE_FFT2_SOURCES}
+)
+target_include_directories(simple_fft2
+ PRIVATE
+  include
+)
+target_link_libraries(simple_fft2
  PRIVATE
   m
 )

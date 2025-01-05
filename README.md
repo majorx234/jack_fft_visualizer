@@ -50,3 +50,6 @@
 - Raylib: https://www.raylib.com/
 - Jack: https://jackaudio.org/
   - https://github.com/jackaudio/jack-example-tools/blob/main/example-clients/capture_client.c
+- simple_fft2 found at: 
+  - https://stackoverflow.com/questions/8801158/fft-in-a-single-c-file
+  - by Leos313
